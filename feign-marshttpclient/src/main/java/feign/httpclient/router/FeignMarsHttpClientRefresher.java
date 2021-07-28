@@ -30,9 +30,9 @@ public class FeignMarsHttpClientRefresher {
 
   private static Logger logger = LoggerFactory.getLogger(FeignMarsHttpClientRefresher.class);
 
-  private Map<String, List<String>> routeMap = new ConcurrentHashMap<>();
-
   private Gson gson = new Gson();
+
+  private Map<String, List<String>> routeMap = new ConcurrentHashMap<>();
 
   private Map<String, String> defaultAddress = new ConcurrentHashMap<>();
 
@@ -48,7 +48,7 @@ public class FeignMarsHttpClientRefresher {
     return instance;
   }
 
-  private FeignMarsHttpClientRefresher() {
+  public void initialize() {
     String serviceList4String =
         HttpUtils.get(FeignMarsHttpClientConsts.FETCH_SERVICELIST_URL);
     if (serviceList4String == null
@@ -63,8 +63,7 @@ public class FeignMarsHttpClientRefresher {
     for (Map.Entry<String, String> entry : services.entrySet()) {
       logger.info("service:" + entry.getKey() + " domain:" + entry.getValue());
 
-      FeignMarsHttpClientRefresher.getInstance().updateDefaultRouteByService(entry.getKey(),
-          entry.getValue());
+      updateDefaultRouteByService(entry.getKey(), entry.getValue());
     }
   }
 
@@ -74,7 +73,7 @@ public class FeignMarsHttpClientRefresher {
         FeignMarsHttpClientConsts.UPDATOR_TIMER_INTERVAL);
 
     new Timer().schedule(new FeignMarsHttpClientDomainListTimer(),
-        FeignMarsHttpClientConsts.UPDATOR_TIMER_INIT + 5,
+        FeignMarsHttpClientConsts.UPDATOR_TIMER_INIT,
         FeignMarsHttpClientConsts.UPDATOR_TIMER_INTERVAL);
   }
 

@@ -31,6 +31,7 @@ public class FeignMarsHttpClientRouteManager {
   }
 
   private FeignMarsHttpClientRouteManager() {
+    FeignMarsHttpClientRefresher.getInstance().initialize();
     FeignMarsHttpClientRefresher.getInstance().start();
   }
 
