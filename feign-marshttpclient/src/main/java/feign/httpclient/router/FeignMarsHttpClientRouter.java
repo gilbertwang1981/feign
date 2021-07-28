@@ -49,13 +49,17 @@ public class FeignMarsHttpClientRouter {
     counter.set(0L);
   }
 
-  public String route(Request request, URI uri) {
+  public String route(Request request, URI uri, boolean isDomain) {
     routeCandidates.put(uri.getAuthority(), FeignMarsHttpClientConsts.EMPYT_STRING);
 
     List<String> ips =
         FeignMarsHttpClientRouteManager.getInstance().getRouteMapByService(uri.getAuthority());
     StringBuffer target = new StringBuffer();
-    if (ips.isEmpty()) {
+
+    if (isDomain) {
+      target.append(FeignMarsHttpClientRouteManager.getInstance()
+          .getDefaultRouteByService(uri.getAuthority()));
+    } else if (ips.isEmpty()) {
       target.append(FeignMarsHttpClientRouteManager.getInstance()
           .getDefaultRouteByService(uri.getAuthority()));
     } else {

@@ -29,6 +29,8 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -64,6 +66,8 @@ import static feign.Util.UTF_8;
 public final class ApacheHttpClient implements Client {
   private static final String ACCEPT_HEADER_NAME = "Accept";
 
+  private static Logger logger = LoggerFactory.getLogger(ApacheHttpClient.class);
+
   private final HttpClient client;
 
   public ApacheHttpClient() {
@@ -74,20 +78,33 @@ public final class ApacheHttpClient implements Client {
     this.client = client;
   }
 
-  @Override
-  public Response execute(Request request, Request.Options options) throws IOException {
+  private Response httpRequest(Request request, Request.Options options, boolean isDomain)
+      throws IOException {
     HttpUriRequest httpUriRequest;
     try {
-      httpUriRequest = toHttpUriRequest(request, options);
+      httpUriRequest = toHttpUriRequest(request, options, isDomain);
     } catch (URISyntaxException e) {
       throw new IOException("URL '" + request.url() + "' couldn't be parsed into a URI", e);
     }
+
     HttpResponse httpResponse = client.execute(httpUriRequest);
     return toFeignResponse(httpResponse).toBuilder().request(request).build();
   }
 
+  @Override
+  public Response execute(Request request, Request.Options options) throws IOException {
+    Response rsp = httpRequest(request, options, false);
+    if (rsp.status() != 200) {
+      logger.error("即将重试1次，HTTP状态码:" + rsp.status());
+
+      rsp = httpRequest(request, options, true);
+    }
+
+    return rsp;
+  }
+
   @SuppressWarnings("deprecation")
-  HttpUriRequest toHttpUriRequest(Request request, Request.Options options)
+  HttpUriRequest toHttpUriRequest(Request request, Request.Options options, boolean isDomain)
       throws UnsupportedEncodingException, MalformedURLException, URISyntaxException {
     RequestBuilder requestBuilder = RequestBuilder.create(request.method());
 
@@ -102,7 +119,7 @@ public final class ApacheHttpClient implements Client {
     URI uri = new URIBuilder(request.url()).build();
 
     // requestBuilder.setUri(uri.getScheme() + "://" + uri.getAuthority() + uri.getRawPath());
-    requestBuilder.setUri(FeignMarsHttpClientRouter.getInstance().route(request, uri));
+    requestBuilder.setUri(FeignMarsHttpClientRouter.getInstance().route(request, uri, isDomain));
 
     // request query params
     List<NameValuePair> queryParams =
