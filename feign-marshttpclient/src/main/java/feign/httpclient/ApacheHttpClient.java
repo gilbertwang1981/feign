@@ -97,6 +97,8 @@ public final class ApacheHttpClient implements Client {
     if (rsp.status() != 200) {
       logger.error("即将重试1次，HTTP状态码:" + rsp.status());
 
+      rsp.close();
+
       rsp = httpRequest(request, options, true);
     }
 
@@ -249,7 +251,8 @@ public final class ApacheHttpClient implements Client {
 
       @Override
       public Reader asReader(Charset charset) throws IOException {
-        return null;
+        Util.checkNotNull(charset, "charset should not be null");
+        return new InputStreamReader(asInputStream(), charset);
       }
     };
   }
