@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import feign.Request;
@@ -25,6 +26,8 @@ import feign.httpclient.router.consts.FeignMarsHttpClientConsts;
 
 public class FeignMarsHttpClientRouter {
   private static FeignMarsHttpClientRouter instance = null;
+
+  private static AtomicLong counter = new AtomicLong();
 
   private static final Logger logger = LoggerFactory.getLogger(FeignMarsHttpClientRouter.class);
 
@@ -42,6 +45,10 @@ public class FeignMarsHttpClientRouter {
     return instance;
   }
 
+  private FeignMarsHttpClientRouter() {
+    counter.set(0L);
+  }
+
   public String route(Request request, URI uri) {
     routeCandidates.put(uri.getAuthority(), FeignMarsHttpClientConsts.EMPYT_STRING);
 
@@ -52,7 +59,9 @@ public class FeignMarsHttpClientRouter {
       target.append(FeignMarsHttpClientRouteManager.getInstance()
           .getDefaultRouteByService(uri.getAuthority()));
     } else {
-      target.append(ips.get(0));
+      counter.compareAndSet(Long.MAX_VALUE, 0);
+
+      target.append(ips.get((int) (counter.incrementAndGet() % ips.size())));
     }
 
     if (FeignMarsHttpClientConsts.EMPYT_STRING.equals(target.toString())) {
