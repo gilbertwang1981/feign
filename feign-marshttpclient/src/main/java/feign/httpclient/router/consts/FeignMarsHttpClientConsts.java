@@ -23,4 +23,7 @@ public interface FeignMarsHttpClientConsts {
 
   public static final String FETCH_IPLIST_URL =
       "http://message-center-statis.int.chuxingyouhui.com/service/monitor/get_ips_by_service?service=";
+
+  public static final String FETCH_SERVICELIST_URL =
+      "http://message-center-statis.int.chuxingyouhui.com/service/monitor/get_service_list";
 }

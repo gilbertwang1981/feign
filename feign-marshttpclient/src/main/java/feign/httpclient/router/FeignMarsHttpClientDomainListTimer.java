@@ -13,13 +13,39 @@
  */
 package feign.httpclient.router;
 
+import java.util.Map;
 import java.util.TimerTask;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import feign.httpclient.router.consts.FeignMarsHttpClientConsts;
+import feign.httpclient.router.util.HttpUtils;
 
 public class FeignMarsHttpClientDomainListTimer extends TimerTask {
 
+  private static Logger logger = LoggerFactory.getLogger(FeignMarsHttpClientDomainListTimer.class);
+
+  private Gson gson = new Gson();
+
   @Override
   public void run() {
-    FeignMarsHttpClientRefresher.getInstance().updateDefaultRouteByService(
-        "message-center-statis-service", "message-center-statis.int.chuxingyouhui.com");
+    String serviceList4String =
+        HttpUtils.get(FeignMarsHttpClientConsts.FETCH_SERVICELIST_URL);
+    if (serviceList4String == null
+        || FeignMarsHttpClientConsts.EMPYT_STRING.equals(serviceList4String)) {
+      logger.error("从服务器获取服务域名列表失败,返回为空");
+
+      return;
+    }
+
+    Map<String, String> services =
+        gson.fromJson(serviceList4String, new TypeToken<Map<String, String>>() {}.getType());
+    for (Map.Entry<String, String> entry : services.entrySet()) {
+      logger.info("service:" + entry.getKey() + " domain:" + entry.getValue());
+
+      FeignMarsHttpClientRefresher.getInstance().updateDefaultRouteByService(entry.getKey(),
+          entry.getValue());
+    }
   }
 }
