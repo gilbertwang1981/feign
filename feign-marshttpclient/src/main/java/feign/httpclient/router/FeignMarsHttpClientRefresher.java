@@ -39,8 +39,17 @@ public class FeignMarsHttpClientRefresher {
     return instance;
   }
 
+  private FeignMarsHttpClientRefresher() {
+    updateDefaultRouteByService("message-center-statis-service",
+        "message-center-statis.int.chuxingyouhui.com");
+  }
+
   public void start() {
-    new Timer().schedule(new FeignMarsHttpClientTimer(),
+    new Timer().schedule(new FeignMarsHttpClientIpListTimer(),
+        FeignMarsHttpClientConsts.UPDATOR_TIMER_INIT,
+        FeignMarsHttpClientConsts.UPDATOR_TIMER_INTERVAL);
+
+    new Timer().schedule(new FeignMarsHttpClientDomainListTimer(),
         FeignMarsHttpClientConsts.UPDATOR_TIMER_INIT,
         FeignMarsHttpClientConsts.UPDATOR_TIMER_INTERVAL);
   }
@@ -51,6 +60,10 @@ public class FeignMarsHttpClientRefresher {
 
   public String getDefaultRouteByService(String service) {
     return defaultAddress.get(service);
+  }
+
+  public void updateDefaultRouteByService(String service, String domain) {
+    defaultAddress.put(service, domain);
   }
 
   public void updateRouteMapByService(String service, List<String> ips) {

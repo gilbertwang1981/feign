@@ -23,9 +23,9 @@ import com.google.gson.reflect.TypeToken;
 import feign.httpclient.router.consts.FeignMarsHttpClientConsts;
 import feign.httpclient.router.util.HttpUtils;
 
-public class FeignMarsHttpClientTimer extends TimerTask {
+public class FeignMarsHttpClientIpListTimer extends TimerTask {
 
-  private static Logger logger = LoggerFactory.getLogger(FeignMarsHttpClientTimer.class);
+  private static Logger logger = LoggerFactory.getLogger(FeignMarsHttpClientIpListTimer.class);
 
   private Gson gson = new Gson();
 

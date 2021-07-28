@@ -11,16 +11,15 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package feign.httpclient.router.consts;
+package feign.httpclient.router;
 
-public interface FeignMarsHttpClientConsts {
-  public final static String DEFAULT_ROUTE = "FEIGN_CLIENT_DEFAULT_ROUTE";
+import java.util.TimerTask;
 
-  public static final Long UPDATOR_TIMER_INTERVAL = 5000L;
-  public static final Long UPDATOR_TIMER_INIT = 0L;
+public class FeignMarsHttpClientDomainListTimer extends TimerTask {
 
-  public static final String EMPYT_STRING = "";
-
-  public static final String FETCH_IPLIST_URL =
-      "http://message-center-statis.int.chuxingyouhui.com/service/monitor/get_ips_by_service?service=";
+  @Override
+  public void run() {
+    FeignMarsHttpClientRefresher.getInstance().updateDefaultRouteByService(
+        "message-center-statis-service", "message-center-statis.int.chuxingyouhui.com");
+  }
 }
