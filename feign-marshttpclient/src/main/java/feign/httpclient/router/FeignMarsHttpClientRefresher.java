@@ -50,7 +50,7 @@ public class FeignMarsHttpClientRefresher {
         FeignMarsHttpClientConsts.UPDATOR_TIMER_INTERVAL);
 
     new Timer().schedule(new FeignMarsHttpClientDomainListTimer(),
-        FeignMarsHttpClientConsts.UPDATOR_TIMER_INIT,
+        FeignMarsHttpClientConsts.UPDATOR_TIMER_INIT + 5,
         FeignMarsHttpClientConsts.UPDATOR_TIMER_INTERVAL);
   }
 
