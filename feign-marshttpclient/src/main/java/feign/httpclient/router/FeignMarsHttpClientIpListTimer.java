@@ -40,7 +40,7 @@ public class FeignMarsHttpClientIpListTimer extends TimerTask {
         continue;
       }
 
-      logger.info("【查询服务地址信息】service:{} ips:{}", candidate, ipList4String);
+      logger.debug("【查询服务地址信息】service:{} ips:{}", candidate, ipList4String);
 
       List<String> ips = gson.fromJson(ipList4String, new TypeToken<List<String>>() {}.getType());
 

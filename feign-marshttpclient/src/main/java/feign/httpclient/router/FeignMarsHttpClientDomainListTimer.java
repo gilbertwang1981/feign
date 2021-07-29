@@ -42,7 +42,7 @@ public class FeignMarsHttpClientDomainListTimer extends TimerTask {
     Map<String, String> services =
         gson.fromJson(serviceList4String, new TypeToken<Map<String, String>>() {}.getType());
     for (Map.Entry<String, String> entry : services.entrySet()) {
-      logger.info("service:" + entry.getKey() + " domain:" + entry.getValue());
+      logger.debug("【查询服务域名信息】service:" + entry.getKey() + " domain:" + entry.getValue());
 
       FeignMarsHttpClientRefresher.getInstance().updateDefaultRouteByService(entry.getKey(),
           entry.getValue());
