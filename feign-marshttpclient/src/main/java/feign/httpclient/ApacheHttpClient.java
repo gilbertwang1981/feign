@@ -42,6 +42,7 @@ import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,6 +51,7 @@ import feign.Request;
 import feign.Response;
 import feign.Util;
 import feign.httpclient.router.FeignMarsHttpClientRouter;
+import feign.httpclient.router.consts.FeignMarsHttpClientConsts;
 import static feign.Util.UTF_8;
 
 /**
@@ -87,14 +89,22 @@ public final class ApacheHttpClient implements Client {
       throw new IOException("URL '" + request.url() + "' couldn't be parsed into a URI", e);
     }
 
-    HttpResponse httpResponse = client.execute(httpUriRequest);
-    return toFeignResponse(httpResponse).toBuilder().request(request).build();
+    try {
+      HttpResponse httpResponse = client.execute(httpUriRequest);
+      return toFeignResponse(httpResponse).toBuilder().request(request).build();
+    } catch (IOException e) {
+      return Response.builder()
+          .status(FeignMarsHttpClientConsts.CONNECT_EXCEPTION_CODE)
+          .reason(e.getMessage())
+          .headers(Collections.emptyMap())
+          .build();
+    }
   }
 
   @Override
   public Response execute(Request request, Request.Options options) throws IOException {
     Response rsp = httpRequest(request, options, false);
-    if (rsp.status() != 200) {
+    if (rsp.status() != FeignMarsHttpClientConsts.HTTP_STATUS_CODE_SUCCESS) {
       logger.error("即将重试1次，HTTP状态码:" + rsp.status());
 
       rsp.close();
