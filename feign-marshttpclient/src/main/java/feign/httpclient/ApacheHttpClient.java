@@ -111,7 +111,7 @@ public final class ApacheHttpClient implements Client {
 
       rsp = httpRequest(request, options, true);
       if (rsp.status() != FeignMarsHttpClientConsts.HTTP_STATUS_CODE_SUCCESS) {
-        throw new IOException("HTTP异常: " + rsp.status());
+        throw new IOException("HTTP异常: " + rsp.status() + "/" + rsp.reason());
       }
     }
 
