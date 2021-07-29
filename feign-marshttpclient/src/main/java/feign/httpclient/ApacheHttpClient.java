@@ -129,8 +129,6 @@ public final class ApacheHttpClient implements Client {
     requestBuilder.setConfig(requestConfig);
 
     URI uri = new URIBuilder(request.url()).build();
-
-    // requestBuilder.setUri(uri.getScheme() + "://" + uri.getAuthority() + uri.getRawPath());
     requestBuilder.setUri(FeignMarsHttpClientRouter.getInstance().route(request, uri, isDomain));
 
     // request query params
