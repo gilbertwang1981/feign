@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import feign.httpclient.router.consts.FeignMarsHttpClientConsts;
+import feign.httpclient.router.util.FeignEnvUtils;
 import feign.httpclient.router.util.HttpUtils;
 
 public class FeignMarsHttpClientDomainListTimer extends TimerTask {
@@ -31,7 +32,7 @@ public class FeignMarsHttpClientDomainListTimer extends TimerTask {
   @Override
   public void run() {
     String serviceList4String =
-        HttpUtils.get(FeignMarsHttpClientConsts.FETCH_SERVICELIST_URL);
+        HttpUtils.get(FeignEnvUtils.getServiceListUrl());
     if (serviceList4String == null
         || FeignMarsHttpClientConsts.EMPYT_STRING.equals(serviceList4String)) {
       logger.error("从服务器获取服务域名列表失败,返回为空");

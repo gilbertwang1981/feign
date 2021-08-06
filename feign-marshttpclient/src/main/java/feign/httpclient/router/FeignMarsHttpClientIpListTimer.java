@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import feign.httpclient.router.consts.FeignMarsHttpClientConsts;
+import feign.httpclient.router.util.FeignEnvUtils;
 import feign.httpclient.router.util.HttpUtils;
 
 public class FeignMarsHttpClientIpListTimer extends TimerTask {
@@ -35,7 +36,7 @@ public class FeignMarsHttpClientIpListTimer extends TimerTask {
         FeignMarsHttpClientRouter.getInstance().getFeignMarsHttpClientRouteCandidates();
     for (String candidate : candidates) {
       String ipList4String =
-          HttpUtils.get(FeignMarsHttpClientConsts.FETCH_IPLIST_URL + candidate);
+          HttpUtils.get(FeignEnvUtils.getIPListUrl() + candidate);
       if (ipList4String == null || FeignMarsHttpClientConsts.EMPYT_STRING.equals(ipList4String)) {
         continue;
       }
