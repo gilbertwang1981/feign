@@ -40,7 +40,7 @@ public class FeignMarsHttpClientFlowSolutionTimer extends TimerTask {
         continue;
       }
 
-      logger.debug("更新分流方案  {} {}", service, solution4String);
+      logger.info("更新分流方案  {} {}", service, solution4String);
 
       FeignMarsHttpClientFlowSolution solution =
           gson.fromJson(solution4String, FeignMarsHttpClientFlowSolution.class);

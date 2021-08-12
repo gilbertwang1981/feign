@@ -13,25 +13,23 @@
  */
 package feign.httpclient.router.vo;
 
-import java.util.List;
+public class FeignMarsHttpClientIPWeight {
+  private String ip;
+  private Integer weight;
 
-public class FeignMarsHttpClientFlowSolution {
-  private Integer flowType;
-  private List<FeignMarsHttpClientIPWeight> ipWeightList;
-
-  public Integer getFlowType() {
-    return flowType;
+  public String getIp() {
+    return ip;
   }
 
-  public void setFlowType(Integer flowType) {
-    this.flowType = flowType;
+  public void setIp(String ip) {
+    this.ip = ip;
   }
 
-  public List<FeignMarsHttpClientIPWeight> getIpWeightList() {
-    return ipWeightList;
+  public Integer getWeight() {
+    return weight;
   }
 
-  public void setIpWeightList(List<FeignMarsHttpClientIPWeight> ipWeightList) {
-    this.ipWeightList = ipWeightList;
+  public void setWeight(Integer weight) {
+    this.weight = weight;
   }
 }
