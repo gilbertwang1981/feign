@@ -22,7 +22,9 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import feign.Request;
+import feign.httpclient.router.consts.FeignFlowSolutionType;
 import feign.httpclient.router.consts.FeignMarsHttpClientConsts;
+import feign.httpclient.router.vo.FeignMarsHttpClientFlowSolution;
 
 public class FeignMarsHttpClientRouter {
   private static FeignMarsHttpClientRouter instance = null;
@@ -56,7 +58,17 @@ public class FeignMarsHttpClientRouter {
         FeignMarsHttpClientRouteManager.getInstance().getRouteMapByService(uri.getAuthority());
     StringBuffer target = new StringBuffer();
 
-    if (isDomain) {
+    boolean domainSolution = isDomain;
+    FeignMarsHttpClientFlowSolution solution =
+        FeignMarsHttpClientRefresher.getInstance().getFlowSolution(uri.getAuthority());
+    if (solution != null) {
+      domainSolution =
+          solution.getFlowType() == FeignFlowSolutionType.FEIGN_SOLUTION_DOMAIN_TYPE.getType()
+              ? true
+              : false;
+    }
+
+    if (domainSolution) {
       target.append(FeignMarsHttpClientRouteManager.getInstance()
           .getDefaultRouteByService(uri.getAuthority()));
     } else if (ips.isEmpty()) {

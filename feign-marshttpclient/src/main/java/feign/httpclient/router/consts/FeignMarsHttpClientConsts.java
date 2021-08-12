@@ -27,6 +27,9 @@ public interface FeignMarsHttpClientConsts {
   public static final String FETCH_SERVICELIST_URL =
       "http://message-center-statis.int.chuxingyouhui.com/service/monitor/get_service_list";
 
+  public static final String FETCH_FLOWSOLUTION_URL =
+      "http://message-center-statis.int.chuxingyouhui.com/service/monitor/get_weight_by_service?service=";
+
   public static final Integer CONNECT_EXCEPTION_CODE = 500;
 
   public static final Integer HTTP_STATUS_CODE_SUCCESS = 200;

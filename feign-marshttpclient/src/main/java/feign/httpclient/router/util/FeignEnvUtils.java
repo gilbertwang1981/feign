@@ -33,4 +33,13 @@ public class FeignEnvUtils {
       return serviceList;
     }
   }
+
+  public static final String getFlowSolutionUrl() {
+    String flowSolution = System.getenv("FEIGN_FETCH_FLOWSOLUTION_URL");
+    if (flowSolution == null || FeignMarsHttpClientConsts.EMPYT_STRING.equals(flowSolution)) {
+      return FeignMarsHttpClientConsts.FETCH_FLOWSOLUTION_URL;
+    } else {
+      return flowSolution;
+    }
+  }
 }

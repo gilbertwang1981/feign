@@ -13,6 +13,7 @@
  */
 package feign.httpclient.router;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +26,7 @@ import com.google.gson.reflect.TypeToken;
 import feign.httpclient.router.consts.FeignMarsHttpClientConsts;
 import feign.httpclient.router.util.FeignEnvUtils;
 import feign.httpclient.router.util.HttpUtils;
+import feign.httpclient.router.vo.FeignMarsHttpClientFlowSolution;
 
 public class FeignMarsHttpClientRefresher {
   private static FeignMarsHttpClientRefresher instance = null;
@@ -33,9 +35,11 @@ public class FeignMarsHttpClientRefresher {
 
   private Gson gson = new Gson();
 
-  private Map<String, List<String>> routeMap = new ConcurrentHashMap<>();
+  private Map<String, List<String>> routes = new ConcurrentHashMap<>();
 
   private Map<String, String> defaultAddress = new ConcurrentHashMap<>();
+
+  private Map<String, FeignMarsHttpClientFlowSolution> solutions = new ConcurrentHashMap<>();
 
   public static FeignMarsHttpClientRefresher getInstance() {
     if (instance == null) {
@@ -76,10 +80,14 @@ public class FeignMarsHttpClientRefresher {
     new Timer().schedule(new FeignMarsHttpClientDomainListTimer(),
         FeignMarsHttpClientConsts.UPDATOR_TIMER_INIT,
         FeignMarsHttpClientConsts.UPDATOR_TIMER_INTERVAL);
+
+    new Timer().schedule(new FeignMarsHttpClientFlowSolutionTimer(),
+        FeignMarsHttpClientConsts.UPDATOR_TIMER_INIT,
+        FeignMarsHttpClientConsts.UPDATOR_TIMER_INTERVAL);
   }
 
   public List<String> getRouteMapByService(String service) {
-    return routeMap.get(service) == null ? Collections.emptyList() : routeMap.get(service);
+    return routes.get(service) == null ? Collections.emptyList() : routes.get(service);
   }
 
   public String getDefaultRouteByService(String service) {
@@ -91,6 +99,22 @@ public class FeignMarsHttpClientRefresher {
   }
 
   public void updateRouteMapByService(String service, List<String> ips) {
-    routeMap.put(service, ips);
+    routes.put(service, ips);
+  }
+
+  public void updateFlowSolution(String service, FeignMarsHttpClientFlowSolution solution) {
+    solutions.put(service, solution);
+  }
+
+  public FeignMarsHttpClientFlowSolution getFlowSolution(String service) {
+    return solutions.get(service);
+  }
+
+  public List<String> getServices() {
+    if (defaultAddress.keySet().isEmpty()) {
+      return Collections.emptyList();
+    } else {
+      return new ArrayList<>(defaultAddress.keySet());
+    }
   }
 }
