@@ -51,21 +51,26 @@ public class FeignMarsHttpClientRouter {
     counter.set(0L);
   }
 
-  public String route(Request request, URI uri, boolean isDomain) {
+  public String route(Request request, URI uri, boolean isRetry) {
     routeCandidates.put(uri.getAuthority(), FeignMarsHttpClientConsts.EMPYT_STRING);
 
     List<String> ips =
         FeignMarsHttpClientRouteManager.getInstance().getRouteMapByService(uri.getAuthority());
     StringBuffer target = new StringBuffer();
 
-    boolean domainSolution = isDomain;
-    FeignMarsHttpClientFlowSolution solution =
-        FeignMarsHttpClientRefresher.getInstance().getFlowSolution(uri.getAuthority());
-    if (solution != null) {
-      domainSolution =
-          (solution.getFlowType() != null && solution.getFlowType() == FeignFlowSolutionType.FEIGN_SOLUTION_DOMAIN_TYPE.getType())
-              ? true
-              : false;
+    boolean domainSolution = false;
+    if (!isRetry) {
+      FeignMarsHttpClientFlowSolution solution =
+          FeignMarsHttpClientRefresher.getInstance().getFlowSolution(uri.getAuthority());
+      if (solution != null) {
+        domainSolution =
+            (solution.getFlowType() != null && solution
+                .getFlowType() == FeignFlowSolutionType.FEIGN_SOLUTION_DOMAIN_TYPE.getType())
+                    ? true
+                    : false;
+      }
+    } else {
+      domainSolution = true;
     }
 
     if (domainSolution) {

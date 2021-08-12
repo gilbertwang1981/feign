@@ -80,11 +80,11 @@ public final class ApacheHttpClient implements Client {
     this.client = client;
   }
 
-  private Response httpRequest(Request request, Request.Options options, boolean isDomain)
+  private Response httpRequest(Request request, Request.Options options, boolean isRetry)
       throws IOException {
     HttpUriRequest httpUriRequest;
     try {
-      httpUriRequest = toHttpUriRequest(request, options, isDomain);
+      httpUriRequest = toHttpUriRequest(request, options, isRetry);
     } catch (URISyntaxException e) {
       throw new IOException("URL '" + request.url() + "' couldn't be parsed into a URI", e);
     }
@@ -119,7 +119,7 @@ public final class ApacheHttpClient implements Client {
   }
 
   @SuppressWarnings("deprecation")
-  HttpUriRequest toHttpUriRequest(Request request, Request.Options options, boolean isDomain)
+  HttpUriRequest toHttpUriRequest(Request request, Request.Options options, boolean isRetry)
       throws UnsupportedEncodingException, MalformedURLException, URISyntaxException {
     RequestBuilder requestBuilder = RequestBuilder.create(request.method());
 
@@ -132,7 +132,7 @@ public final class ApacheHttpClient implements Client {
     requestBuilder.setConfig(requestConfig);
 
     URI uri = new URIBuilder(request.url()).build();
-    requestBuilder.setUri(FeignMarsHttpClientRouter.getInstance().route(request, uri, isDomain));
+    requestBuilder.setUri(FeignMarsHttpClientRouter.getInstance().route(request, uri, isRetry));
 
     // request query params
     List<NameValuePair> queryParams =
