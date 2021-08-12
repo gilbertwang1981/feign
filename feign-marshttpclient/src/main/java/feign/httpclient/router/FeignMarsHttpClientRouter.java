@@ -63,7 +63,7 @@ public class FeignMarsHttpClientRouter {
         FeignMarsHttpClientRefresher.getInstance().getFlowSolution(uri.getAuthority());
     if (solution != null) {
       domainSolution =
-          solution.getFlowType() == FeignFlowSolutionType.FEIGN_SOLUTION_DOMAIN_TYPE.getType()
+          (solution.getFlowType() != null && solution.getFlowType() == FeignFlowSolutionType.FEIGN_SOLUTION_DOMAIN_TYPE.getType())
               ? true
               : false;
     }
