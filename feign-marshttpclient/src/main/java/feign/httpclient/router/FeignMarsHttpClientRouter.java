@@ -52,28 +52,30 @@ public class FeignMarsHttpClientRouter {
   private FeignMarsHttpClientRouter() {
     counter.set(0L);
   }
-  
-  private Integer getWeight(String sourceIp , List<FeignMarsHttpClientIPWeight> weights) {
+
+  private Integer getWeight(String sourceIp, List<FeignMarsHttpClientIPWeight> weights) {
     for (FeignMarsHttpClientIPWeight weight : weights) {
       if (sourceIp.equals(weight.getIp())) {
         return weight.getWeight();
       }
     }
-    
+
     return 0;
   }
-  
-  private List<String> getTargetIpList(List<String> source , String service) {
-    FeignMarsHttpClientFlowSolution solution = FeignMarsHttpClientRefresher.getInstance().getFlowSolution(service);
-    if (solution != null && solution.getFlowType() == FeignFlowSolutionType.FEIGN_SOLUTION_NONE_DOMAIN_TYPE.getType()) {
+
+  private List<String> getTargetIpList(List<String> source, String service) {
+    FeignMarsHttpClientFlowSolution solution =
+        FeignMarsHttpClientRefresher.getInstance().getFlowSolution(service);
+    if (solution != null && solution
+        .getFlowType() == FeignFlowSolutionType.FEIGN_SOLUTION_NONE_DOMAIN_TYPE.getType()) {
       List<String> target = new ArrayList<>();
       for (String ip : source) {
-        int total = getWeight(ip , solution.getIpWeightList());
-        for (int i = 0;i < total;i ++) {
+        int total = getWeight(ip, solution.getIpWeightList());
+        for (int i = 0; i < total; i++) {
           target.add(ip);
         }
       }
-      
+
       return target;
     } else {
       return source;
@@ -110,8 +112,8 @@ public class FeignMarsHttpClientRouter {
           .getDefaultRouteByService(uri.getAuthority()));
     } else {
       counter.compareAndSet(Long.MAX_VALUE, 0);
-      
-      List<String> targetIps = getTargetIpList(ips , uri.getAuthority());
+
+      List<String> targetIps = getTargetIpList(ips, uri.getAuthority());
       target.append(targetIps.get((int) (counter.incrementAndGet() % targetIps.size())));
     }
 
