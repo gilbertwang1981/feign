@@ -115,7 +115,7 @@ public class FeignMarsHttpClientRouter {
 
       List<String> targetIps = getTargetIpList(ips, uri.getAuthority());
 
-      logger.info("目标路由表服务节点数量{}", targetIps.size());
+      logger.debug("目标路由表服务节点数量{}", targetIps.size());
 
       target.append(targetIps.get((int) (counter.incrementAndGet() % targetIps.size())));
     }
