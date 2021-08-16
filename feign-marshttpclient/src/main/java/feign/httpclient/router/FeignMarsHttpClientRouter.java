@@ -15,11 +15,12 @@ package feign.httpclient.router;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import feign.Request;
@@ -30,6 +31,8 @@ import feign.httpclient.router.vo.FeignMarsHttpClientIPWeight;
 
 public class FeignMarsHttpClientRouter {
   private static FeignMarsHttpClientRouter instance = null;
+
+  private AtomicLong counter = new AtomicLong();
 
   private static final Logger logger = LoggerFactory.getLogger(FeignMarsHttpClientRouter.class);
 
@@ -45,6 +48,10 @@ public class FeignMarsHttpClientRouter {
     }
 
     return instance;
+  }
+
+  private FeignMarsHttpClientRouter() {
+    counter.set(0L);
   }
 
   private Integer getWeight(String sourceIp, List<FeignMarsHttpClientIPWeight> weights) {
@@ -70,14 +77,12 @@ public class FeignMarsHttpClientRouter {
         }
       }
 
+      Collections.shuffle(target);
+
       return target;
     } else {
       return source;
     }
-  }
-
-  private Integer getRandom() {
-    return Math.abs(UUID.randomUUID().hashCode());
   }
 
   public String route(Request request, URI uri, boolean isRetry) {
@@ -109,11 +114,11 @@ public class FeignMarsHttpClientRouter {
       target.append(FeignMarsHttpClientRouteManager.getInstance()
           .getDefaultRouteByService(uri.getAuthority()));
     } else {
+      counter.compareAndSet(Long.MAX_VALUE, 0L);
+
       List<String> targetIps = getTargetIpList(ips, uri.getAuthority());
 
-      logger.debug("目标路由表服务节点数量{}", targetIps.size());
-
-      target.append(targetIps.get((int) (getRandom() % targetIps.size())));
+      target.append(targetIps.get((int) (counter.getAndIncrement() % targetIps.size())));
     }
 
     if (FeignMarsHttpClientConsts.EMPYT_STRING.equals(target.toString())) {
