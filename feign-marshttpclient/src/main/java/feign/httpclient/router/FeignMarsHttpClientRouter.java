@@ -71,7 +71,7 @@ public class FeignMarsHttpClientRouter {
       List<String> target = new ArrayList<>();
       for (String ip : source) {
         int total = getWeight(ip, solution.getIpWeightList());
-        for (int i = 0; i < total; i++) {
+        for (int i = 0; i < (int) (total / 10.0); i++) {
           target.add(ip);
         }
       }
