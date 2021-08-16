@@ -15,7 +15,6 @@ package feign.httpclient.router;
 
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -77,7 +76,7 @@ public class FeignMarsHttpClientRouter {
         }
       }
 
-      Collections.shuffle(target);
+      // Collections.shuffle(target);
 
       return target;
     } else {
