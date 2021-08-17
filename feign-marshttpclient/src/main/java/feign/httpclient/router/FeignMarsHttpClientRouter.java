@@ -53,6 +53,7 @@ public class FeignMarsHttpClientRouter {
     counter.set(0L);
   }
 
+  // the range of the weight is between 0 and 100;
   private Integer getWeight(String sourceIp, List<FeignMarsHttpClientIPWeight> weights) {
     for (FeignMarsHttpClientIPWeight weight : weights) {
       if (sourceIp.equals(weight.getIp())) {
@@ -70,15 +71,15 @@ public class FeignMarsHttpClientRouter {
         .getFlowType() == FeignFlowSolutionType.FEIGN_SOLUTION_NONE_DOMAIN_TYPE.getType()) {
       List<String> target = new ArrayList<>();
       for (String ip : source) {
-        int total = getWeight(ip, solution.getIpWeightList());
-        for (int i = 0; i < (int) (total / 10.0); i++) {
+        int total = (int) (getWeight(ip, solution.getIpWeightList()) / 10.0);
+        for (int i = 0; i < total; i++) {
           target.add(ip);
         }
+
+        logger.debug("{}的权重值为{}", ip, total);
       }
 
-      // Collections.shuffle(target);
-
-      return target;
+      return target.size() == 0 ? source : target;
     } else {
       return source;
     }
