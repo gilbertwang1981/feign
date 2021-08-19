@@ -88,10 +88,7 @@ public class FeignMarsHttpClientRouter {
   public String route(Request request, URI uri, boolean isRetry) {
     routeCandidates.put(uri.getAuthority(), FeignMarsHttpClientConsts.EMPYT_STRING);
 
-    List<String> ips =
-        FeignMarsHttpClientRouteManager.getInstance().getRouteMapByService(uri.getAuthority());
     StringBuffer target = new StringBuffer();
-
     boolean domainSolution = false;
     if (!isRetry) {
       FeignMarsHttpClientFlowSolution solution =
@@ -106,6 +103,11 @@ public class FeignMarsHttpClientRouter {
     } else {
       domainSolution = true;
     }
+    
+    List<String> ips =
+        FeignMarsHttpClientRouteManager.getInstance().getRouteMapByService(uri.getAuthority());
+
+    logger.info("是否重试 {} , 是否使用域名 {} , ip列表大小{}", isRetry, domainSolution, ips.size());
 
     if (domainSolution) {
       target.append(FeignMarsHttpClientRouteManager.getInstance()
